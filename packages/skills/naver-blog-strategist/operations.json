@@ -1,0 +1,30 @@
+{
+  "skill": "naver-blog-strategist",
+  "version": "1.0.0",
+  "operations": {
+    "keyword_strategy": {
+      "input": ["topic", "audience", "contentType"],
+      "output": ["mainKeyword", "longTailKeywords", "searchIntent", "problemToSolve"]
+    },
+    "title_thumbnail_hook": {
+      "input": ["keyword_plan"],
+      "output": ["titles", "thumbnailCopy", "hook"]
+    },
+    "draft": {
+      "input": ["keyword_plan", "title_plan", "audience", "contentType"],
+      "output": ["title", "body", "imageSlots", "sources", "cta", "tags"]
+    },
+    "viraltest": {
+      "input": ["draft"],
+      "output": ["seo", "crank", "dia", "structure", "images", "ctaTags", "total", "issues"]
+    },
+    "revise": {
+      "input": ["draft", "quality_report"],
+      "output": ["revisedDraft"]
+    },
+    "publish_package": {
+      "input": ["draft", "quality_report"],
+      "output": ["content", "imageGuide", "sources", "cta", "tags", "quality"]
+    }
+  }
+}
