@@ -1,0 +1,18 @@
+{
+  "skill": "google-blog-strategist",
+  "version": "2.0.0",
+  "engine": "google-content-intelligence",
+  "operations": {
+    "search_intent": {"input": ["topic", "audience", "contentType"], "output": ["searchIntent", "userQuestions"]},
+    "research": {"input": ["topic", "searchIntent", "keywords"], "output": ["facts", "sources", "freshness", "verificationNotes"]},
+    "keyword_strategy": {"input": ["topic", "userQuestions"], "output": ["primaryTopic", "relatedTerms", "longTailTerms", "naturalUsage"]},
+    "experience_check": {"input": ["draft", "experienceData"], "output": ["experienceType", "unsupportedClaims", "issues"]},
+    "originality_check": {"input": ["draft", "research"], "output": ["originality", "addedValue", "reusedContentRisk", "issues"]},
+    "draft": {"input": ["searchIntent", "research", "keywordPlan", "audience", "contentType", "experienceData"], "output": ["title", "body", "imageGuide", "sources", "links", "tags"]},
+    "on_page_check": {"input": ["draft", "keywordPlan"], "output": ["titleQuality", "headingQuality", "linkQuality", "mediaQuality", "issues"]},
+    "safety_guard": {"input": ["draft", "onPageReport", "affiliate", "sponsored"], "output": ["spamRisk", "linkRisk", "affiliateRisk", "privacyRisk", "misrepresentationRisk", "overallRisk", "issues"]},
+    "quality_gate": {"input": ["draft", "research", "experienceReport", "originalityReport", "onPageReport", "safetyReport"], "output": ["searchIntent", "information", "factSource", "originality", "userValue", "freshness", "readability", "onPageSeo", "safety", "total", "issues"]},
+    "revise": {"input": ["draft", "qualityReport", "safetyReport", "originalityReport"], "output": ["revisedDraft"]},
+    "publish_package": {"input": ["draft", "qualityReport", "safetyReport"], "output": ["content", "imageGuide", "sources", "links", "quality", "safety"]}
+  }
+}

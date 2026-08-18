@@ -1,0 +1,30 @@
+{
+  "id": "google-blog-content",
+  "version": "2.0.0",
+  "name": "Google Blog Content Intelligence Workflow",
+  "description": "Master AI Google Content Intelligence v2.0: search intent, research, fact check, originality, on-page SEO, safety and quality gate",
+  "skill": "google-blog-strategist",
+  "inputs": {
+    "topic": {"type": "string", "required": true},
+    "audience": {"type": "string", "required": false, "default": "일반 독자"},
+    "content_type": {"type": "string", "required": false, "default": "정보"},
+    "experience_data": {"type": "string", "required": false, "default": ""},
+    "affiliate": {"type": "boolean", "required": false, "default": false},
+    "sponsored": {"type": "boolean", "required": false, "default": false}
+  },
+  "steps": [
+    {"id":"search_intent","type":"skill","skill":"google-blog-strategist","operation":"search_intent","input":{"topic":"{{inputs.topic}}","audience":"{{inputs.audience}}","contentType":"{{inputs.content_type}}"},"output":"search_intent"},
+    {"id":"research","type":"skill","skill":"google-blog-strategist","operation":"research","input":{"topic":"{{inputs.topic}}","searchIntent":"{{steps.search_intent.output.searchIntent}}","keywords":"{{steps.search_intent.output.userQuestions}}"},"output":"research"},
+    {"id":"keyword_strategy","type":"skill","skill":"google-blog-strategist","operation":"keyword_strategy","input":{"topic":"{{inputs.topic}}","userQuestions":"{{steps.search_intent.output.userQuestions}}"},"output":"keyword_plan"},
+    {"id":"draft","type":"skill","skill":"google-blog-strategist","operation":"draft","input":{"searchIntent":"{{steps.search_intent.output}}","research":"{{steps.research.output}}","keywordPlan":"{{steps.keyword_strategy.output}}","audience":"{{inputs.audience}}","contentType":"{{inputs.content_type}}","experienceData":"{{inputs.experience_data}}"},"output":"draft"},
+    {"id":"experience_check","type":"skill","skill":"google-blog-strategist","operation":"experience_check","input":{"draft":"{{steps.draft.output}}","experienceData":"{{inputs.experience_data}}"},"output":"experience_report"},
+    {"id":"originality_check","type":"skill","skill":"google-blog-strategist","operation":"originality_check","input":{"draft":"{{steps.draft.output}}","research":"{{steps.research.output}}"},"output":"originality_report"},
+    {"id":"on_page_check","type":"skill","skill":"google-blog-strategist","operation":"on_page_check","input":{"draft":"{{steps.draft.output}}","keywordPlan":"{{steps.keyword_strategy.output}}"},"output":"on_page_report"},
+    {"id":"safety_guard","type":"skill","skill":"google-blog-strategist","operation":"safety_guard","input":{"draft":"{{steps.draft.output}}","onPageReport":"{{steps.on_page_check.output}}","affiliate":"{{inputs.affiliate}}","sponsored":"{{inputs.sponsored}}"},"output":"safety_report"},
+    {"id":"quality_gate","type":"skill","skill":"google-blog-strategist","operation":"quality_gate","input":{"draft":"{{steps.draft.output}}","research":"{{steps.research.output}}","experienceReport":"{{steps.experience_check.output}}","originalityReport":"{{steps.originality_check.output}}","onPageReport":"{{steps.on_page_check.output}}","safetyReport":"{{steps.safety_guard.output}}"},"output":"quality_report"},
+    {"id":"revision","type":"skill","skill":"google-blog-strategist","operation":"revise","input":{"draft":"{{steps.draft.output}}","qualityReport":"{{steps.quality_gate.output}}","safetyReport":"{{steps.safety_guard.output}}","originalityReport":"{{steps.originality_check.output}}"},"output":"revised_draft"},
+    {"id":"publish_package","type":"skill","skill":"google-blog-strategist","operation":"publish_package","input":{"draft":"{{steps.revised_draft.output}}","qualityReport":"{{steps.quality_gate.output}}","safetyReport":"{{steps.safety_guard.output}}"},"output":"publish_package"}
+  ],
+  "outputs":{"content":"{{steps.publish_package.output}}","quality":"{{steps.quality_gate.output}}","safety":"{{steps.safety_guard.output}}"},
+  "safety":{"no_ranking_guarantee":true,"no_algorithm_evasion":true,"require_source_for_time_sensitive_claims":true,"require_originality_check":true,"require_experience_verification":true,"affiliate_link_guard":true,"privacy_guard":true,"spam_guard":true}
+}
