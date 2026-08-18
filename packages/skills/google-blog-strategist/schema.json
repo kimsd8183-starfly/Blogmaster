@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Google Content Intelligence Skill Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["topic"],
+  "properties": {
+    "topic": {"type": "string", "minLength": 1},
+    "audience": {"type": "string", "default": "일반 독자"},
+    "contentType": {"type": "string", "enum": ["정보", "가이드", "비교", "리뷰", "여행", "뉴스", "구매", "기타"], "default": "정보"},
+    "keywords": {"type": "array", "items": {"type": "string"}, "maxItems": 10},
+    "experienceData": {"type": "string", "default": ""},
+    "affiliate": {"type": "boolean", "default": false},
+    "sponsored": {"type": "boolean", "default": false}
+  }
+}
