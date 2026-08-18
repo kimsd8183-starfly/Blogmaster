@@ -1,13 +1,14 @@
 {
   "id": "naver-blog-content",
-  "version": "1.0.0",
-  "name": "Naver Blog Content Workflow",
-  "description": "네이버 블로그 콘텐츠 전략 스킬을 Master AI Workflow Builder에서 실행하기 위한 기본 파이프라인",
+  "version": "2.0.0",
+  "name": "Naver Blog Content Intelligence Workflow",
+  "description": "Master AI Naver Content Intelligence Skill v2.0을 실행하는 검색의도·조사·사실검증·경험검증·품질·안전 중심 파이프라인",
   "skill": "naver-blog-strategist",
   "inputs": {
     "topic": {"type": "string", "required": true},
     "audience": {"type": "string", "required": false, "default": "30~60대"},
-    "content_type": {"type": "string", "required": false, "default": "여행/일상/핫이슈"},
+    "content_type": {"type": "string", "required": false, "default": "여행"},
+    "experience_data": {"type": "string", "required": false, "default": ""},
     "fast_mode": {"type": "boolean", "required": false, "default": false}
   },
   "steps": [
@@ -16,8 +17,16 @@
       "type": "skill",
       "skill": "naver-blog-strategist",
       "operation": "keyword_strategy",
-      "input": {"topic": "{{inputs.topic}}", "audience": "{{inputs.audience}}", "content_type": "{{inputs.content_type}}"},
+      "input": {"topic": "{{inputs.topic}}", "audience": "{{inputs.audience}}", "contentType": "{{inputs.content_type}}"},
       "output": "keyword_plan"
+    },
+    {
+      "id": "research",
+      "type": "skill",
+      "skill": "naver-blog-strategist",
+      "operation": "research",
+      "input": {"topic": "{{inputs.topic}}", "searchIntent": "{{steps.keyword_strategy.output.searchIntent}}", "keywords": "{{steps.keyword_strategy.output.relatedKeywords}}"},
+      "output": "research"
     },
     {
       "id": "title_options",
@@ -32,21 +41,37 @@
       "type": "skill",
       "skill": "naver-blog-strategist",
       "operation": "draft",
-      "input": {"keyword_plan": "{{steps.keyword_strategy.output}}", "title_plan": "{{steps.title_options.output}}", "audience": "{{inputs.audience}}", "content_type": "{{inputs.content_type}}"},
+      "input": {"keyword_plan": "{{steps.keyword_strategy.output}}", "research": "{{steps.research.output}}", "title_plan": "{{steps.title_options.output}}", "audience": "{{inputs.audience}}", "contentType": "{{inputs.content_type}}", "experienceData": "{{inputs.experience_data}}"},
       "output": "draft"
+    },
+    {
+      "id": "experience_check",
+      "type": "skill",
+      "skill": "naver-blog-strategist",
+      "operation": "experience_check",
+      "input": {"draft": "{{steps.draft.output}}", "experienceData": "{{inputs.experience_data}}"},
+      "output": "experience_report"
     },
     {
       "id": "quality_gate",
       "type": "skill",
       "skill": "naver-blog-strategist",
-      "operation": "viraltest",
-      "input": {"draft": "{{steps.draft.output}}"},
+      "operation": "quality_gate",
+      "input": {"draft": "{{steps.draft.output}}", "research": "{{steps.research.output}}", "experience_check": "{{steps.experience_check.output}}"},
       "output": "quality_report"
+    },
+    {
+      "id": "safety_guard",
+      "type": "skill",
+      "skill": "naver-blog-strategist",
+      "operation": "safety_guard",
+      "input": {"draft": "{{steps.draft.output}}", "quality_report": "{{steps.quality_gate.output}}"},
+      "output": "safety_report"
     },
     {
       "id": "revision_gate",
       "type": "condition",
-      "condition": "{{steps.quality_gate.output.total}} >= 95 || {{inputs.fast_mode}} == true",
+      "condition": "{{steps.quality_gate.output.total}} >= 90 && {{steps.safety_guard.output.overallRisk}} == 'low' || {{inputs.fast_mode}} == true",
       "then": "publish_package",
       "else": "revise"
     },
@@ -55,7 +80,7 @@
       "type": "skill",
       "skill": "naver-blog-strategist",
       "operation": "revise",
-      "input": {"draft": "{{steps.draft.output}}", "quality_report": "{{steps.quality_gate.output}}"},
+      "input": {"draft": "{{steps.draft.output}}", "quality_report": "{{steps.quality_gate.output}}", "safety_report": "{{steps.safety_guard.output}}"},
       "output": "revised_draft",
       "next": "quality_gate"
     },
@@ -64,18 +89,22 @@
       "type": "skill",
       "skill": "naver-blog-strategist",
       "operation": "publish_package",
-      "input": {"draft": "{{steps.draft.output}}", "quality_report": "{{steps.quality_gate.output}}"},
+      "input": {"draft": "{{steps.draft.output}}", "quality_report": "{{steps.quality_gate.output}}", "safety_report": "{{steps.safety_guard.output}}"},
       "output": "publish_package"
     }
   ],
   "outputs": {
     "content": "{{steps.publish_package.output}}",
-    "quality": "{{steps.quality_gate.output}}"
+    "quality": "{{steps.quality_gate.output}}",
+    "safety": "{{steps.safety_guard.output}}"
   },
   "safety": {
     "no_ranking_guarantee": true,
     "no_algorithm_evasion": true,
     "require_source_for_time_sensitive_claims": true,
-    "require_disclosure_for_sponsorship": true
+    "require_experience_verification": true,
+    "require_disclosure_for_sponsorship": true,
+    "privacy_guard": true,
+    "keyword_stuffing_guard": true
   }
 }
