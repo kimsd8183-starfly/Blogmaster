@@ -1,30 +1,43 @@
 {
   "skill": "naver-blog-strategist",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "engine": "naver-content-intelligence",
   "operations": {
     "keyword_strategy": {
       "input": ["topic", "audience", "contentType"],
-      "output": ["mainKeyword", "longTailKeywords", "searchIntent", "problemToSolve"]
+      "output": ["mainKeyword", "relatedKeywords", "longTailKeywords", "searchIntent", "problemToSolve", "keywordNaturalness"]
+    },
+    "research": {
+      "input": ["topic", "searchIntent", "keywords"],
+      "output": ["facts", "sources", "freshness", "verificationNotes"]
+    },
+    "experience_check": {
+      "input": ["draft", "experienceData"],
+      "output": ["experienceType", "unsupportedExperienceClaims", "issues"]
     },
     "title_thumbnail_hook": {
       "input": ["keyword_plan"],
       "output": ["titles", "thumbnailCopy", "hook"]
     },
     "draft": {
-      "input": ["keyword_plan", "title_plan", "audience", "contentType"],
+      "input": ["keyword_plan", "research", "title_plan", "audience", "contentType", "experienceData"],
       "output": ["title", "body", "imageSlots", "sources", "cta", "tags"]
     },
-    "viraltest": {
-      "input": ["draft"],
-      "output": ["seo", "crank", "dia", "structure", "images", "ctaTags", "total", "issues"]
+    "quality_gate": {
+      "input": ["draft", "research", "experience_check"],
+      "output": ["searchIntent", "information", "factSource", "originality", "readability", "freshness", "keywordNaturalness", "safety", "total", "issues"]
+    },
+    "safety_guard": {
+      "input": ["draft", "quality_report"],
+      "output": ["spamRisk", "keywordStuffingRisk", "privacyRisk", "advertisingRisk", "misrepresentationRisk", "overallRisk", "issues"]
     },
     "revise": {
-      "input": ["draft", "quality_report"],
+      "input": ["draft", "quality_report", "safety_report"],
       "output": ["revisedDraft"]
     },
     "publish_package": {
-      "input": ["draft", "quality_report"],
-      "output": ["content", "imageGuide", "sources", "cta", "tags", "quality"]
+      "input": ["draft", "quality_report", "safety_report"],
+      "output": ["content", "imageGuide", "sources", "cta", "tags", "quality", "safety"]
     }
   }
 }
