@@ -1,14 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Naver Blog Strategist Skill Input",
+  "title": "Naver Content Intelligence Skill Input",
   "type": "object",
   "additionalProperties": false,
   "required": ["topic"],
   "properties": {
     "topic": {"type": "string", "minLength": 1},
     "audience": {"type": "string", "default": "30~60대"},
-    "contentType": {"type": "string", "enum": ["여행", "일상", "핫이슈", "기타"], "default": "여행"},
+    "contentType": {"type": "string", "enum": ["여행", "일상", "핫이슈", "정보", "후기", "비교", "구매", "기타"], "default": "여행"},
     "keywords": {"type": "array", "items": {"type": "string"}, "maxItems": 10},
+    "experienceData": {"type": "string", "default": ""},
     "fastMode": {"type": "boolean", "default": false}
   }
 }
